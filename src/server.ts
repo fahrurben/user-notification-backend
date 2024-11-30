@@ -9,6 +9,7 @@ import { env } from "@/common/utils/envConfig";
 import {userRouter} from "@/router/userRouter";
 import {userService} from "@/service/userService";
 import cron from "node-cron";
+import {emailRouter} from "@/router/emailRouter";
 
 const logger = pino({ name: "server start" });
 const app: Express = express();
@@ -24,7 +25,8 @@ app.use(helmet());
 
 // Request logging
 app.use(requestLogger);
-app.use(userRouter)
+app.use(userRouter);
+app.use(emailRouter);
 
 // Error handlers
 app.use(errorHandler());

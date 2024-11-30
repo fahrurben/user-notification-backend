@@ -3,14 +3,15 @@ import db from "@/db";
 import { knex } from 'knex';
 import moment from "moment-timezone";
 import axios from "axios";
-import {response} from "express";
 import {BIRTHDAY_TYPE} from "@/entity/notificationLog";
+import {env} from "@/common/utils/envConfig";
+import {response} from "express";
 
 export const users_table = "users";
 export const notifications_table = "notification_logs";
-const NOTIFICATION_SEND_TIME = 9;
-const EMAIL_API_STATUS_SENT = "sent"
-const EMAIL_API_STATUS_FAILED = "failed"
+export const NOTIFICATION_SEND_TIME = 9;
+export const EMAIL_API_STATUS_SENT = "sent"
+export const EMAIL_API_STATUS_FAILED = "failed"
 
 export class UserService {
 
@@ -46,26 +47,35 @@ export class UserService {
     let allBirthdayUsers: User[] = await db(users_table)
       .where(q =>
         q.whereRaw('DATE_FORMAT(birthday, \'%m-%d\') = DATE_FORMAT(CONVERT_TZ(now(), @@GLOBAL.time_zone, users.location), \'%m-%d\')')
-          .andWhereRaw('DATE_FORMAT(CONVERT_TZ(now(), @@GLOBAL.time_zone, users.location), \'%H\') = ?', [NOTIFICATION_SEND_TIME])
+          .andWhere('id','not in', function () {
+            this.select('userId').from(notifications_table).whereRaw('type = ? and status = ? and YEAR(sentTime) = ?', [BIRTHDAY_TYPE, EMAIL_API_STATUS_SENT, moment().year()]);
+          })
+          // .andWhereRaw('DATE_FORMAT(CONVERT_TZ(now(), @@GLOBAL.time_zone, users.location), \'%H\') = ?', [NOTIFICATION_SEND_TIME])
       )
       .orWhereIn('id', function () {
-        this.select('userId').from('notification_logs').whereRaw('type = ? and status = ? and YEAR(sentTime) = ?', [BIRTHDAY_TYPE, EMAIL_API_STATUS_FAILED, moment().year()]);
+        this.select('userId').from(notifications_table).whereRaw('type = ? and status = ? and YEAR(sentTime) = ?', [BIRTHDAY_TYPE, EMAIL_API_STATUS_FAILED, moment().year()]);
       });
     for (let user of allBirthdayUsers) {
+      let currentTime = moment(today).tz(user.location);
+      if (currentTime.hour() < NOTIFICATION_SEND_TIME) {
+        continue;
+      }
+
       let status;
       try {
-        const response = await axios.post("https://email-service.digitalenvision.com.au/send-email", {
+        const response = await axios.post(env.EMAIL_SERVICE_API_URL, {
           "email": user.email,
           "message": `Hey, ${user.firstName} ${user.lastName} it’s your birthday`
         });
-        status = EMAIL_API_STATUS_SENT
+        status = EMAIL_API_STATUS_SENT;
       } catch (e) {
-        status = EMAIL_API_STATUS_FAILED
+        status = EMAIL_API_STATUS_FAILED;
       }
 
       let existingLog = await db(notifications_table).where("type", BIRTHDAY_TYPE)
+        .andWhere("type", BIRTHDAY_TYPE)
         .andWhere("userId", user.id)
-        .andWhere("status", EMAIL_API_STATUS_FAILED)
+        .andWhereRaw("YEAR(sentTime) = ?", [moment().year()])
         .first();
 
       if (existingLog) {

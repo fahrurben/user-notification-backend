@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "a5a7d690-76f0-4e10-8032-3b6f0dbfcaee",
 		"name": "User Birthday",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "5173342"
 	},
 	"item": [
@@ -20,7 +20,18 @@
 						}
 					}
 				},
-				"url": "http://localhost:8000/api/users"
+				"url": {
+					"raw": "http://localhost:8000/api/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"users"
+					]
+				}
 			},
 			"response": []
 		},
@@ -29,7 +40,47 @@
 			"request": {
 				"method": "DELETE",
 				"header": [],
-				"url": "http://localhost:8000/api/users/1"
+				"url": {
+					"raw": "http://localhost:8000/api/users/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"users",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send Email",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"test@test.com\",\r\n    \"message\": \"Hey, John Doe it’s your birthday\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/send-email",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"send-email"
+					]
+				}
 			},
 			"response": []
 		}

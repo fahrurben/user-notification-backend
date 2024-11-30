@@ -29,7 +29,8 @@ mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p mysql
 
 #### Step 5: Testing the Project
 - Running migrations: `NODE_ENV=test knex migrate:latest`
-- Development Mode: `npm run test`
+- Run Dev Server, need to run server when testing send email: `npm run dev`
+- Run Test: `npm run test`
 
 #### API Docs
 The API docs also can check on file `docs/User Birthday.postman_collection.json`
@@ -48,3 +49,12 @@ POST `http://localhost:8000/api/users`
 
 ##### Delete User
 DELETE `http://localhost:8000/api/users/:id`
+
+##### Send Email
+POST `http://localhost:8000/send-email`
+```json
+{
+  "email": "test@test.com",
+  "message": "Hey, John Doe it’s your birthday"
+}
+```
