@@ -2,13 +2,13 @@ import cors from "cors";
 import express, { type Express } from "express";
 import helmet from "helmet";
 import { pino } from "pino";
-import db from "@/db";
 
 import errorHandler from "@/common/middleware/errorHandler";
 import requestLogger from "@/common/middleware/requestLogger";
 import { env } from "@/common/utils/envConfig";
-import {userController} from "@/controller/userController";
 import {userRouter} from "@/router/userRouter";
+import {userService} from "@/service/userService";
+import cron from "node-cron";
 
 const logger = pino({ name: "server start" });
 const app: Express = express();
@@ -28,5 +28,11 @@ app.use(userRouter)
 
 // Error handlers
 app.use(errorHandler());
+
+cron.schedule('* * * * *', function() {
+  userService.sendBirthdayNotification(new Date()).then(() => {
+    console.log("Sending birthday email notification");
+  })
+});
 
 export { app, logger };
