@@ -24,6 +24,25 @@ class UserController {
       return handleServiceResponse(errorResponse, res);
     }
   }
+
+  async deleteUser(req: Request, res: Response){
+    try {
+      const id = Number.parseInt(req.params.id as string, 10);
+
+      let existing = await userService.findById(id)
+      if (!existing) {
+        let errorResponse = ServiceResponse.failure("User not found", null, StatusCodes.NOT_FOUND);
+        return handleServiceResponse(errorResponse, res);
+      }
+
+      await userService.delete(id)
+      let serviceResponse = ServiceResponse.success<number>("User deleted", id);
+      return handleServiceResponse(serviceResponse, res);
+    } catch (e) {
+      let errorResponse = ServiceResponse.failure(e.message, null, StatusCodes.INTERNAL_SERVER_ERROR);
+      return handleServiceResponse(errorResponse, res);
+    }
+  }
 }
 
 export const userController = new UserController();
