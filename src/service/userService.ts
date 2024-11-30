@@ -6,8 +6,8 @@ import axios from "axios";
 import {response} from "express";
 import {BIRTHDAY_TYPE} from "@/entity/notificationLog";
 
-const table = "users";
-const notifications_table = "notification_logs";
+export const users_table = "users";
+export const notifications_table = "notification_logs";
 const NOTIFICATION_SEND_TIME = 9;
 const EMAIL_API_STATUS_SENT = "sent"
 const EMAIL_API_STATUS_FAILED = "failed"
@@ -20,30 +20,30 @@ export class UserService {
     this.db = db;
   }
   async create(user: SaveUser): Promise<User> {
-    const [id] = await db(table).insert({
+    const [id] = await db(users_table).insert({
       "email": user.email,
       "firstName": user.firstName,
       "lastName": user.lastName,
       "birthday": user.birthday,
       "location": user.location,
     })
-    return await db(table).where('id', id).first()
+    return await db(users_table).where('id', id).first()
   }
 
   async findById(id: number): Promise<User> {
-    return await db(table).where('id', id).first()
+    return await db(users_table).where('id', id).first()
   }
 
   async findByEmail(email: string): Promise<User> {
-    return await db(table).where('email', email).first()
+    return await db(users_table).where('email', email).first()
   }
 
   async delete(id: number): Promise<void> {
-    return await db(table).where('id', id).delete();
+    return await db(users_table).where('id', id).delete();
   }
 
   async sendBirthdayNotification(today: Date): Promise<void> {
-    let allBirthdayUsers: User[] = await db(table)
+    let allBirthdayUsers: User[] = await db(users_table)
       .where(q =>
         q.whereRaw('DATE_FORMAT(birthday, \'%m-%d\') = DATE_FORMAT(CONVERT_TZ(now(), @@GLOBAL.time_zone, users.location), \'%m-%d\')')
           .andWhereRaw('DATE_FORMAT(CONVERT_TZ(now(), @@GLOBAL.time_zone, users.location), \'%H\') = ?', [NOTIFICATION_SEND_TIME])
