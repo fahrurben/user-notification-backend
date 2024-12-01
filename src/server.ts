@@ -31,7 +31,7 @@ app.use(emailRouter);
 // Error handlers
 app.use(errorHandler());
 
-cron.schedule('* * * * *', function() {
+cron.schedule('0 * * * *', function() {
   userService.sendBirthdayNotification(new Date()).then(() => {
     console.log("Sending birthday email notification");
   })

@@ -29,8 +29,9 @@ mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p mysql
 
 #### Step 5: Testing the Project
 - Running migrations: `NODE_ENV=test knex migrate:latest`
-- Run Dev Server, need to run server when testing send email: `npm run dev`
+- **Run Dev Server, need to run server when testing send email**: `npm run dev`
 - Run Test: `npm run test`
+- **Notes: Sometimes test failed caused of timeout and error on purpose**
 
 #### API Docs
 The API docs also can check on file `docs/User Birthday.postman_collection.json`

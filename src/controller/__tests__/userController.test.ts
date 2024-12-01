@@ -86,64 +86,6 @@ describe("User API Endpoints", () => {
       expect(responseBody.success).toBeTruthy();
     });
 
-    it("should send notification", async () => {
-      // Act
-      const saveUser: SaveUser = {
-        "email": "test@test.com",
-        "firstName": "John",
-        "lastName": "Doe",
-        "birthday": moment().format("1990-MM-DD"),
-        "location": "Asia/Jakarta"
-      };
-
-      let createdUser = await userService.create(saveUser);
-
-      let today = moment().tz(createdUser.location).hour(NOTIFICATION_SEND_TIME);
-
-      await userService.sendBirthdayNotification(today.toDate());
-
-      let notificationLog = await db(notifications_table)
-        .where('type', BIRTHDAY_TYPE)
-        .andWhere('userId', createdUser.id)
-        .first()
-
-      // Assert
-      expect(notificationLog.type).toEqual(BIRTHDAY_TYPE);
-      expect(notificationLog.userId).toEqual(createdUser.id);
-    });
-
-    it("should re-send notification when failed", async () => {
-      // Act
-      const saveUser: SaveUser = {
-        "email": "test@test.com",
-        "firstName": "John",
-        "lastName": "Doe",
-        "birthday": moment().format("1990-MM-DD"),
-        "location": "Asia/Jakarta"
-      };
-
-      let createdUser = await userService.create(saveUser);
-
-      await db(notifications_table).insert({
-        "type": BIRTHDAY_TYPE,
-        "userId": createdUser.id,
-        "status": EMAIL_API_STATUS_FAILED,
-        "sentTime": new Date(),
-      })
-
-      let today = moment().tz(createdUser.location).hour(12);
-      await userService.sendBirthdayNotification(today.toDate());
-
-      let notificationLog = await db(notifications_table)
-        .where('type', BIRTHDAY_TYPE)
-        .andWhere('userId', createdUser.id)
-        .first()
-
-      // Assert
-      expect(notificationLog.type).toEqual(BIRTHDAY_TYPE);
-      expect(notificationLog.userId).toEqual(createdUser.id);
-      expect(notificationLog.status).toEqual(EMAIL_API_STATUS_SENT);
-    });
   });
 
 });

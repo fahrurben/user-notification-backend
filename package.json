@@ -14,7 +14,7 @@
     "lint": "biome check src/",
     "lint:fix": "biome check src/ --fix",
     "format": "biome format src/",
-    "test": "vitest run",
+    "test": "vitest run --no-file-parallelism",
     "prepare": "husky"
   },
   "dependencies": {
