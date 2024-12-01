@@ -43,6 +43,27 @@ class UserController {
       return handleServiceResponse(errorResponse, res);
     }
   }
+
+  async updateUser(req: Request, res: Response){
+    try {
+      const id = Number.parseInt(req.params.id as string, 10);
+      let userDTO: SaveUser = req.body as SaveUser;
+
+      let existing = await userService.findById(id)
+      if (!existing) {
+        let errorResponse = ServiceResponse.failure("User not found", null, StatusCodes.NOT_FOUND);
+        return handleServiceResponse(errorResponse, res);
+      }
+
+      let updated = await userService.update(id, userDTO);
+
+      let serviceResponse = ServiceResponse.success<User>("User updated", updated);
+      return handleServiceResponse(serviceResponse, res);
+    } catch (e) {
+      let errorResponse = ServiceResponse.failure(e.message, null, StatusCodes.INTERNAL_SERVER_ERROR);
+      return handleServiceResponse(errorResponse, res);
+    }
+  }
 }
 
 export const userController = new UserController();

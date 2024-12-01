@@ -48,6 +48,18 @@ POST `http://localhost:8000/api/users`
 }
 ```
 
+##### Update User
+Put `http://localhost:8000/api/users/{id}`
+```json
+{
+    "email": "test@test.com",
+    "firstName": "John",
+    "lastName": "Doe",
+    "birthday": "2024-11-30",
+    "location": "Asia/Jakarta"
+}
+```
+
 ##### Delete User
 DELETE `http://localhost:8000/api/users/:id`
 

@@ -6,14 +6,10 @@ import type { ServiceResponse } from "@/common/models/serviceResponse";
 import { app } from "@/server";
 import db from "@/db";
 import {
-  EMAIL_API_STATUS_FAILED, EMAIL_API_STATUS_SENT,
-  NOTIFICATION_SEND_TIME,
   notifications_table,
   users_table,
   userService
 } from "@/service/userService";
-import moment from "moment-timezone";
-import {BIRTHDAY_TYPE} from "@/entity/notificationLog";
 
 describe("User API Endpoints", () => {
   beforeEach(async (context) => {
@@ -77,8 +73,7 @@ describe("User API Endpoints", () => {
 
       let createdUser = await userService.create(saveUser);
 
-      const response = await request(app).delete(`/api/users/${createdUser.id}`)
-        .send(saveUser)
+      const response = await request(app).delete(`/api/users/${createdUser.id}`);
       const responseBody: ServiceResponse<User[]> = response.body;
 
       // Assert
@@ -86,6 +81,57 @@ describe("User API Endpoints", () => {
       expect(responseBody.success).toBeTruthy();
     });
 
+    it("should return error when delete non existing user", async () => {
+      const response = await request(app).delete(`/api/users/1`);
+      const responseBody: ServiceResponse<User[]> = response.body;
+
+      // Assert
+      expect(response.statusCode).toEqual(StatusCodes.NOT_FOUND);
+      expect(responseBody.success).toBeFalsy();
+    });
+
+    it("should update user", async () => {
+      // Act
+      const saveUser: SaveUser = {
+        "email": "test1@test.com",
+        "firstName": "John",
+        "lastName": "Doe",
+        "birthday": "2024-11-30",
+        "location": "Asia/Jakarta"
+      };
+
+      let createdUser = await userService.create(saveUser);
+
+      saveUser.email = "test2@test.com";
+      const response = await request(app).put(`/api/users/${createdUser.id}`)
+        .send(saveUser)
+      const responseBody: ServiceResponse<User[]> = response.body;
+
+      // Assert
+      expect(response.statusCode).toEqual(StatusCodes.OK);
+      expect(responseBody.success).toBeTruthy();
+      expect(responseBody.message).toContain("User updated");
+
+      compareUsers(saveUser as User, responseBody.responseObject as User);
+    });
+
+    it("should return error when update non existing user", async () => {
+      const saveUser: SaveUser = {
+        "email": "test1@test.com",
+        "firstName": "John",
+        "lastName": "Doe",
+        "birthday": "2024-11-30",
+        "location": "Asia/Jakarta"
+      };
+
+      const response = await request(app).put(`/api/users/1`)
+        .send(saveUser);
+      const responseBody: ServiceResponse<User[]> = response.body;
+
+      // Assert
+      expect(response.statusCode).toEqual(StatusCodes.NOT_FOUND);
+      expect(responseBody.success).toBeFalsy();
+    });
   });
 
 });

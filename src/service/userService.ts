@@ -43,6 +43,22 @@ export class UserService {
     return await db(users_table).where('id', id).delete();
   }
 
+  async update(id: number, user: SaveUser): Promise<User> {
+    let sameEmail = await db(users_table).where("email", user.email).andWhereNot('id', id).first();
+    if (sameEmail) {
+      throw new Error(`Email already exist ${user.email}`);
+    }
+
+    await db(users_table).where("id", id).update({
+      "email": user.email,
+      "firstName": user.firstName,
+      "lastName": user.lastName,
+      "birthday": user.birthday,
+      "location": user.location,
+    })
+    return await db(users_table).where("id", id).first()
+  }
+
   async sendBirthdayNotification(today: Date): Promise<void> {
     let allBirthdayUsers: User[] = await db(users_table)
       .where(q =>
