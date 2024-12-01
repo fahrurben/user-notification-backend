@@ -16,6 +16,7 @@ mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p mysql
 - Clone the repository: `git clone https://github.com/fahrurben/user-notification-backend.git`
 - Navigate: `cd user_notification_backend`
 - Install dependencies: `npm ci`
+- Install knex cli: `npm install knex -g`
 
 #### Step 3: Environment Configuration
 - Create `.env`: Copy `.env.template` to `.env`
@@ -35,6 +36,8 @@ mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p mysql
 
 #### API Docs
 The API docs also can check on file `docs/User Birthday.postman_collection.json`
+**Notes: Please follow data format on the example. For location the format is using the timezone identifier**
+https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 
 ##### Create User
 POST `http://localhost:8000/api/users`

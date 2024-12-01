@@ -1,7 +1,7 @@
-import {validateRequest} from "@/common/utils/httpHandlers";
+import { validateRequest } from "@/common/utils/httpHandlers";
+import { emailController } from "@/controller/emailController";
+import { SendEmailSchema } from "@/entity/email";
 import express, { type Router } from "express";
-import {SendEmailSchema} from "@/entity/email";
-import {emailController} from "@/controller/emailController";
 
 export const emailRouter: Router = express.Router();
 

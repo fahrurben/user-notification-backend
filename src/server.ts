@@ -6,10 +6,10 @@ import { pino } from "pino";
 import errorHandler from "@/common/middleware/errorHandler";
 import requestLogger from "@/common/middleware/requestLogger";
 import { env } from "@/common/utils/envConfig";
-import {userRouter} from "@/router/userRouter";
-import {userService} from "@/service/userService";
+import { emailRouter } from "@/router/emailRouter";
+import { userRouter } from "@/router/userRouter";
+import { userService } from "@/service/userService";
 import cron from "node-cron";
-import {emailRouter} from "@/router/emailRouter";
 
 const logger = pino({ name: "server start" });
 const app: Express = express();
@@ -31,10 +31,10 @@ app.use(emailRouter);
 // Error handlers
 app.use(errorHandler());
 
-cron.schedule('0 * * * *', function() {
+cron.schedule("0 * * * *", () => {
   userService.sendBirthdayNotification(new Date()).then(() => {
     console.log("Sending birthday email notification");
-  })
+  });
 });
 
 export { app, logger };

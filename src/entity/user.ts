@@ -1,22 +1,22 @@
 import { z } from "zod";
 
 export interface User {
-  id: number,
-  email: string,
-  firstName: string,
-  lastName: string,
-  birthday: Date,
-  location: string,
-  createdAt: Date,
-  updatedAt: Date,
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  birthday: Date;
+  location: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface SaveUser {
-  email: string,
-  firstName: string,
-  lastName: string,
-  birthday: Date,
-  location: string,
+  email: string;
+  firstName: string;
+  lastName: string;
+  birthday: Date;
+  location: string;
 }
 
 export const SaveUserSchema = z.object({
